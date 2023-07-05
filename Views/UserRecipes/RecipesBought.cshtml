@@ -1,0 +1,70 @@
+﻿@model IEnumerable<RecipeApp1.Models.Recipe>
+
+@{
+    ViewData["Title"] = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>My Recipe List</h1>
+
+<table class="table">
+    <thead>
+        
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DownloadUrl)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DownloadUrl)
+                </td>
+                <td>
+                    
+                    <button><a asp-controller="Recipes" asp-action="Details" asp-route-id="@item.Id">Details</a> </button>
+                    @*@if (item.DownloadUrl != null && item.DownloadUrl != "" && item.DownloadUrl != " ")
+                    {
+                        <button>
+                            <form asp-controller="Recipes" asp-action="DownloadFile">
+                                <input type="hidden" name="downloadUrl" value="@item.DownloadUrl" />
+                                <input type="submit" value="Download Recipes PDF" />
+                            </form>
+                        </button>
+                    }
+                    else
+                    {
+                        <button disabled>Recipe Not Available.</button>
+                    }
+
+                    *@
+                    
+                    <button><a asp-controller="Reviews" asp-action="WriteReviewFromUser" asp-route-recipeId="@item.Id">Write a Review!</a> </button>
+                    
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

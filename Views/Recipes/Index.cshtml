@@ -1,0 +1,175 @@
+﻿@model IEnumerable<RecipeApp1.Models.Recipe>
+@using Microsoft.AspNetCore.Identity
+@using RecipeApp1.Areas.Identity.Data
+@inject SignInManager<RecipeApp1User> SignInManager
+@inject UserManager<RecipeApp1User> UserManager
+@{
+    ViewData["Title"] = "Index";
+}
+
+<style>
+    /* CSS styles for the Index page */
+    .recipe-card {
+        border: 3px solid #ddd;
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 20px;
+        width: 400px; /* Adjust the width as desired */
+        height: 650px; /* Adjust the height as desired */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+        .recipe-card img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        .recipe-card img {
+            max-width: 100%;
+            margin-bottom: 10px;
+            flex-grow: 1;
+        }
+
+        .recipe-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .recipe-card p {
+            margin-bottom: 10px;
+        }
+
+        .recipe-card .button {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top:5px;
+        }
+
+            .recipe-card .button:hover {
+                background-color: #0056b3;
+            }
+
+    .recipe-cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 20px;
+        margin-top: 40px;
+    }
+
+    .button {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+        .button:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+    .button1 {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color:darkkhaki;
+        color: #fff;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+        .button1:hover {
+        background-color:lightgray;
+            color: #fff;
+        }
+</style>
+
+
+<h1>Index</h1>
+
+@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create" class="button">Create New</a>
+    </p>
+
+}
+
+<form asp-controller="Recipes" asp-action="Index">
+    <p>
+        <strong>Category:</strong>
+        <input type="text" name="category" placeholder="Type here..." />
+
+        <input type="submit" value="Filter" class="button1" />
+    </p>
+</form>
+
+<div class="recipe-cards-container">
+    @foreach (var item in Model)
+    {
+        var ownsRecipes = false;
+
+        if (item.UserRecipe != null)
+        {
+            foreach (var userrecipepair in item.UserRecipe)
+            {
+                if (userrecipepair.AppUser == UserManager.GetUserName(User))
+                {
+                    ownsRecipes = true;
+                    break;
+                }
+            }
+        }
+
+        <div class="recipe-card">
+            <h3>@Html.DisplayFor(modelItem => item.Title)</h3>
+            <img src="@item.Images" alt="@item.Title" style="max-width: 200px; max-height:350px"  />
+            <p>@Html.DisplayFor(modelItem => item.Description)</p>
+            <p>Cook Time: @Html.DisplayFor(modelItem => item.CookTime)</p>
+            <p>
+                Average Rating: @{
+                    var averageRating = item.Reviews?.Count > 0 ? item.Reviews.Average(r => r.Rating) : 0;
+                    if (averageRating == 0)
+                    {
+                        <text>No Reviews.</text>
+                    }
+                    else
+                    {
+                        <text>@Math.Round(averageRating, 2, MidpointRounding.AwayFromZero)</text>
+                    }
+                }
+            </p>
+
+            @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                <a asp-action="Edit" asp-route-id="@item.Id" class="button">Edit</a>
+            }
+            <a asp-action="Details" asp-route-id="@item.Id" class="button">Details</a>
+            @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                <a asp-action="Delete" asp-route-id="@item.Id" class="button">Delete</a>
+            }
+
+            @if (User.Identity.IsAuthenticated && User.IsInRole("User"))
+            {
+                @if (ownsRecipes)
+                {
+                    <button disabled>Recipe Bought</button>
+                }
+                else
+                {
+                    <button>
+                        <a asp-action="AddRecipeBought" asp-controller="UserRecipes" asp-route-recipeid="@item.Id">Buy Recipe</a>
+                    </button>
+                }
+            }
+        </div>
+    }
+</div>

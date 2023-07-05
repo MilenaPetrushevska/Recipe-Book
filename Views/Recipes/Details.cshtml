@@ -1,0 +1,116 @@
+﻿@model RecipeApp1.Models.Recipe
+@using Microsoft.AspNetCore.Identity
+@using RecipeApp1.Areas.Identity.Data
+@inject SignInManager<RecipeApp1User> SignInManager
+@inject UserManager<RecipeApp1User> UserManager
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Recipe</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Category)
+        </dt>
+        <dd class="col-sm-10">
+            <a asp-controller="Categories" asp-action="Details" asp-route-id="@Model.CategoryId"> @Html.DisplayFor(model => model.Category.Name)</a>
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Images)
+        </dt>
+        <dd>
+            <img style="max-width:200px" src="@Model.Images">
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CookTime)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CookTime)
+        </dd>
+        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.DownloadUrl)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.DownloadUrl)
+        </dd>
+        }
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Ingredient)
+        </dt>
+        
+        <dd>
+
+        </dd class="col-sm-10">
+        @foreach(var item in Model.Ingredient)
+        {
+            <a asp-controller="Ingredients" asp-action="Details" asp-route-id="@item.IngredientId">
+                    <li>@item.Ingredient.Name</li>
+            </a> <br/>
+        }
+               
+
+
+        <dt class="col-sm-2">
+            Average Rating
+        </dt>
+        @{
+            var averageRating = Model.Reviews?.Count > 0 ? Model.Reviews.Average(r => r.Rating) : 0;
+            if (averageRating == 0)
+            {
+                <dd class="col-sm-10">No Reviews.</dd>
+            }
+            else
+            {
+                <dd class="col-sm-10">@Math.Round((decimal)averageRating, 2, MidpointRounding.AwayFromZero)</dd>
+            }
+        }
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Reviews)
+        </dt>
+
+        @if (Model.Reviews?.Count == 0)
+        {
+            <dd class="col-sm-10">None.</dd>
+        }
+        else
+        {
+            @foreach (var review in Model.Reviews)
+            {
+                <hr />
+                <dd class="col-sm-10">
+                    <strong>@review.AppUser: </strong>@review.Comment
+                    <br>
+                    <strong>Rating: </strong> @review.Rating
+                </dd>
+            }
+        }
+    </dl>
+</div>
+<div>
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+   {
+        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+        <span>|</span>
+   }
+
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -1,0 +1,64 @@
+﻿@model RecipeApp1.ViewModels.IngrRecEditViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Recipe</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Recipe.CategoryId" class="control-label"></label>
+                <select asp-for="Recipe.CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Recipe.Title" class="control-label"></label>
+                <input asp-for="Recipe.Title" class="form-control" />
+                <span asp-validation-for="Recipe.Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Recipe.Description" class="control-label"></label>
+                <input asp-for="Recipe.Description" class="form-control" />
+                <span asp-validation-for="Recipe.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Recipe.Images" class="control-label"></label>
+                <input asp-for="Recipe.Images" class="form-control" />
+                <span asp-validation-for="Recipe.Images" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Recipe.CookTime" class="control-label"></label>
+                <input asp-for="Recipe.CookTime" class="form-control" />
+                <span asp-validation-for="Recipe.CookTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SelectedIngr" class="control-label">Ingredients</label>
+                <select asp-for="SelectedIngr" class="form-control js-example-basic-multiple"
+                        asp-items="Model.IngrList"> </select>
+                <span asp-validation-for="SelectedIngr" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Recipe.DownloadUrl" class="control-label"></label>
+                <textarea asp-for="Recipe.DownloadUrl" class="form-control custom-input-size" ></textarea>
+                <span asp-validation-for="Recipe.DownloadUrl" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
